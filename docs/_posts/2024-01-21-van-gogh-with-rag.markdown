@@ -58,8 +58,8 @@ Notebook links: `embed_letters.ipynb`
 
 In order for large language models to "read" the letters, we must first encode the natural language into tokens using the `tiktoken` library from OpenAI. These tokens belong to a large but finite vocabulary that is familiar to the model. We scan through the letters and break them into chunks if the number of tokens is greater than the model's context window (source: [OpenAI Cookbook: Embedding Wikipedia articles for search](https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search)). Then, we feed the letter chunks into the `text-embedding-ada-002` model to obtain high-dimensional embeddings. It is important to note that embeddings from recent transformer-based models have contextual understanding, meaning that a single word may have different embeddings depending on the words surrounding it. 
 
+{% highlight python %}
 # Split letters into chunks
-```python
 MAX_TOKENS = 1600
 vgogh_letter_chunks = []
 idxs = []
@@ -72,7 +72,7 @@ for idx, letter in tqdm(letters.iterrows()):
 
 # Join chunks to their letter metadata and drop the full, original text
 vgogh_letter_chunks_df = pd.DataFrame({'chunk': vgogh_letter_chunks, 'idx': idxs}).set_index('idx').join(letters).drop('Text', axis=1)
-```
+{% endhighlight %}
 
 ```python
 BATCH_SIZE = 100  

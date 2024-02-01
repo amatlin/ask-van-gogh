@@ -32,6 +32,9 @@ github_username:  amatlin
 
 # Build settings
 theme: minima
+markdown: kramdown
+highlighter: rouge
+input: GFM
 plugins:
   - jekyll-feed
 

@@ -5,11 +5,9 @@ date:   2024-01-21 22:14:58 -0800
 categories: jekyll update
 ---
 
-<img src="{{ "/assets/images/cafe_terrace_at_night.jpeg" | prepend: site.baseurl | prepend: site.url}" alt="Cafe Terrace at Night" />
-
 ## Introduction 
 
-The [Van Gogh letters](https://www.vangoghmuseum.nl/en/art-and-stories/stories/all-stories/van-goghs-letters) offer a view into the painter's innermost thoughts, sources of artistic inspiration, and relationships. More than 100 years since the publication of the letters by his sister-in-law, Johanna van Gogh-Bonger, Van Gogh's writings can be understood in new ways thanks to the introduction of nifty LLM techniques. In particular, Retrieval Augmented Generation (RAG) creates an opportunity to "talk to" a corpus of documents. This blog post is a learning project in which I create a RAG pipeline based on the Van Gogh letters, demonstrating how such an approach enhances the performance of large language models on domain-specific questions. 
+The [Van Gogh letters](https://www.vangoghmuseum.nl/en/art-and-stories/stories/all-stories/van-goghs-letters) offer a view into the painter's innermost thoughts, sources of artistic inspiration, and relationships. More than 100 years since the publication of the letters by his sister-in-law, Johanna van Gogh-Bonger, Van Gogh's writings can be understood in new ways thanks to the introduction of LLM techniques. In particular, Retrieval Augmented Generation (RAG) creates an opportunity to "talk to" a corpus of documents. This blog post is a learning project in which I create a RAG pipeline based on the Van Gogh letters, demonstrating how such an approach enhances the performance of large language models on domain-specific questions. 
 
 More concretely, we will explore how to get from regular ChatGPT...
 
@@ -60,8 +58,8 @@ Notebook links: `embed_letters.ipynb`
 
 In order for large language models to "read" the letters, we must first encode the natural language into tokens using the `tiktoken` library from OpenAI. These tokens belong to a large but finite vocabulary that is familiar to the model. We scan through the letters and break them into chunks if the number of tokens is greater than the model's context window (source: [OpenAI Cookbook: Embedding Wikipedia articles for search](https://cookbook.openai.com/examples/embedding_wikipedia_articles_for_search)). Then, we feed the letter chunks into the `text-embedding-ada-002` model to obtain high-dimensional embeddings. It is important to note that embeddings from recent transformer-based models have contextual understanding, meaning that a single word may have different embeddings depending on the words surrounding it. 
 
-```
 # Split letters into chunks
+```python
 MAX_TOKENS = 1600
 vgogh_letter_chunks = []
 idxs = []
@@ -76,7 +74,7 @@ for idx, letter in tqdm(letters.iterrows()):
 vgogh_letter_chunks_df = pd.DataFrame({'chunk': vgogh_letter_chunks, 'idx': idxs}).set_index('idx').join(letters).drop('Text', axis=1)
 ```
 
-```
+```python
 BATCH_SIZE = 100  
 
 embeddings = []
@@ -91,7 +89,7 @@ for batch_start in range(0, len(vgogh_letter_chunks), BATCH_SIZE):
     embeddings.extend(batch_embeddings)
 ```
 
-```
+```python
 import umap 
 import plotly.express as px
 
